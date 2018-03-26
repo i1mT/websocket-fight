@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>聊天室</title>
+</head>
+
+<body>
+    <div class="container">
+        <h2>聊天室 Demo</h2>
+
+        <textarea id="chats" cols="30" rows="10"></textarea>
+        <input id="msg" type="text">
+        <button id="sendBtn">发送</button>
+    </div>
+</body>
+<script>
+    let sendBtn = document.getElementById("sendBtn")
+    let socket = new WebSocket("ws://localhost:8001")
+
+    socket.onopen = function() {
+        console.log("socket opened")
+        let chats = document.getElementById("chats")
+        chats.value = "Connected Success!"
+    }
+    socket.onclose = function() {
+        console.log("socket closed")
+        let chats = document.getElementById("chats")
+        chats.value += "\nConnected Closed!"
+    }
+
+    socket.onmessage = function(e) {
+        console.log(e.data)
+        let chats = document.getElementById("chats")
+        chats.value += "\nConnected Closed!"
+        let chats = document.getElementById("chats")
+
+        if (chats.value == "")
+            chats.value = "iimT: " + e.data
+        else
+            chats.value += "\niimT: " + e.data
+    }
+
+
+
+    sendBtn.onclick = function() {
+        let msg = document.getElementById("msg").value
+
+        socket.send(msg)
+
+    }
+</script>
+
+</html>
