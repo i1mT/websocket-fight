@@ -5,53 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/socket.io/socket.io.js"></script>
     <title>聊天室</title>
 </head>
 
 <body>
     <div class="container">
-        <h2>聊天室 Demo</h2>
+        <h2>Socket Demo -- <span id="username"></span></h2>
 
         <textarea id="chats" cols="30" rows="10"></textarea>
-        <input id="msg" type="text">
-        <button id="sendBtn">发送</button>
+        <input id="msg" type="text" placeholder="输入你的用户名加入">
+        <button id="sendBtn">加入</button>
     </div>
 </body>
 <script>
-    let sendBtn = document.getElementById("sendBtn")
-    let socket = new WebSocket("ws://localhost:8001")
+    let socket = io()
+    let send_btn = document.getElementById("sendBtn")
+    let message  = document.getElementById("msg")
+    let chat_panel = document.getElementById("chats")
+    let username = document.getElementById("username")
 
-    socket.onopen = function() {
-        console.log("socket opened")
-        let chats = document.getElementById("chats")
-        chats.value = "Connected Success!"
-    }
-    socket.onclose = function() {
-        console.log("socket closed")
-        let chats = document.getElementById("chats")
-        chats.value += "\nConnected Closed!"
-    }
-
-    socket.onmessage = function(e) {
-        console.log(e.data)
-        let chats = document.getElementById("chats")
-        chats.value += "\nConnected Closed!"
-        let chats = document.getElementById("chats")
-
-        if (chats.value == "")
-            chats.value = "iimT: " + e.data
-        else
-            chats.value += "\niimT: " + e.data
+    send_btn.onclick = function (){
+        socket.emit("register", {username: message.value})
+        username.innerHTML = message.value
+        message.value = ""
+        return
     }
 
+    socket.on('finding', function(msg){
+        addPanelLine("正在匹配对手")
+    });
 
+    socket.on("found", function (data) {
+        addPanelLine("找到对手：" + data.opponent)
+    })
 
-    sendBtn.onclick = function() {
-        let msg = document.getElementById("msg").value
+    socket.on("successconn", function () {
+        addPanelLine("连接成功！")
+    })
 
-        socket.send(msg)
+    function addPanelLine(msg) {
+        let value = chat_panel.value
 
+        chat_panel.value = value + "\n" + msg
     }
 </script>
-
 </html>
